@@ -1,61 +1,71 @@
 #!/usr/bin/python3
-""" Place Module for HBNB project """
+""" THis is the place class"""
+import models
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey, Integer, Float, Table
 from sqlalchemy.orm import relationship
-import os
-import models
-from models.city import City
-from models.user import User
-from models.amenity import Amenity
-from models.review import Review
 from os import getenv
-
-
-place_amenity = Table('place_amenity', Base.metadata,
-                      Column('place_id', String(60), ForeignKey('places.id'),
-                             primary_key=True, nullable=False),
-                      Column('amenity_id', String(60),
-                             ForeignKey('amenities.id'),
-                             primary_key=True, nullable=False))
+from models.review import Review
+from models.amenity import Amenity
 
 
 class Place(BaseModel, Base):
-    """This shall represent the place class"""
+    """THis shall rep place class"""
     __tablename__ = 'places'
-    city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
-    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
-    name = Column(String(128), nullable=False)
-    description = Column(String(1024), nullable=True)
-    number_rooms = Column(Integer, nullable=False, default=0)
-    number_bathrooms = Column(Integer, nullable=False, default=0)
-    max_guest = Column(Integer, default=0)
-    price_by_night = Column(Integer, default=0)
-    latitude = Column(Float, nullable=True)
-    longitude = Column(Float, nullable=True)
-    reviews = relationship("Review", backref="place", cascade="all, delete")
-    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False)
 
-    @property
-    def reviews(self):
-        """ This shall represent the getter"""
-        revw_lst = []
-        for revw in models.storage.all(Review).values():
-            if revw.place_id == self.id:
-                revw_lst.append(revw)
-        return revw_lst
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
+        user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
+        name = Column(String(128), nullable=False)
+        description = Column(String(1024), nullable=True)
+        number_rooms = Column(Integer, default=0, nullable=False)
+        number_bathrooms = Column(Integer, default=0, nullable=False)
+        max_guest = Column(Integer, default=0, nullable=False)
+        price_by_night = Column(Integer, default=0, nullable=False)
+        latitude = Column(Float, nullable=True)
+        longitude = Column(Float, nullable=True)
+        reviews = relationship("Review", backref="place",
+                               cascade="delete")
+        amenities = relationship('Amenity', secondary='place_amenity',
+                                 back_populates='place_amenities',
+                                 viewonly=False)
+        amenity_ids = []
+    else:
+        city_id = ""
+        user_id = ""
+        name = ""
+        description = ""
+        number_rooms = 0
+        number_bathrooms = 0
+        max_guest = 0
+        price_by_night = 0
+        latitude = 0.0
+        longitude = 0.0
 
-    @property
-    def amenities(self):
-        """THis shall represent getter for amenities"""
-        amnty_lst = []
-        for amnty in models.storage.all(Amenity).values():
-            if amnty.place_id == self.id:
-                amnty_lst.append(amnty)
-        return amnty_lst
+        @property
+        def reviews(self):
+            """ This shall rep the getter of reviews"""
+            lst_revws = []
+            all_revws = models.storage.all(Review)
+            for revew in all_revws.values():
+                if revew.place_id == self.id:
+                    lst_revws.append(revew)
+            return lst_revws
 
-    @amenities.setter
-    def amenities(self, obj):
-        """ this shall rep setter for amenities """
-        if isinstance(obj, Amenity):
-            self.amenities.append(obj)
+        @property
+        def amenities(self):
+            """this shall rep the getter amenities"""
+            lst_amen = []
+            all_amen = models.storage.all(Amenity)
+            for amen in all_amen:
+                if amen.place_id == self.id:
+                    lst_amen.append(amen)
+            return lst_amen
+
+        @amenities.setter
+        def amenities(self, obj):
+            """ THis shall rep setter of amenity ids"""
+            if type(obj) is Amenity:
+                self.amenity_ids.append(obj.id)
+            else:
+                pass
