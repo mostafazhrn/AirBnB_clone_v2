@@ -12,12 +12,12 @@ import os
 
 
 class DBStorage:
-    """This is the db storage class"""
+    """This is the DBStorage class"""
     __engine = None
     __session = None
 
     def __init__(self):
-        """This shall init db Storage"""
+        """This shall initialize the DBStorage"""
         db_vars = {
             'host': os.getenv('HBNB_MYSQL_HOST'),
             'user': os.getenv('HBNB_MYSQL_USER'),
@@ -32,40 +32,39 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """This shall search current db all obj depeneding on cls name"""
+        """This shall query on the current database session all objects depending of the class name"""
         nuevo_dct = {}
         if cls is not None:
             for obj in self.__session.query(cls):
                 ky = "{}.{}".format(obj.__class__.__name__, obj.id)
                 nuevo_dct[ky] = obj
-            else:
-                for cl in [User, State, City, Place, Amenity, Review]:
-                    for obj in self.__session.query(cl):
-                        ky = "{}.{}".format(obj.__class__.__name__. obj.id)
-                        nuevo_dct[ky] = obj
-            return nuevo_dct
-
+        else:
+            for cl in [User, State, City, Place, Amenity, Review]:
+                for obj in self.__session.query(cl):
+                    ky = "{}.{}".format(obj.__class__.__name__, obj.id)
+                    nuevo_dct[ky] = obj
+        return nuevo_dct
+    
     def new(self, obj):
-        """This shall add obj to db session"""
+        """This shall add the object to the current database session"""
         self.__session.add(obj)
 
     def save(self):
-        """This shall commit changes to db"""
+        """This shall commit all changes of the current database session"""
         self.__session.commit()
 
     def delete(self, obj=None):
-        """THis shall del from db session"""
+        """This shall delete from the current database session obj if not None"""
         if obj is not None:
             self.__session.delete(obj)
 
     def reload(self):
-        """This shall create table in db"""
+        """This shall create all tables in the database"""
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine,
-                                       expire_on_commit=False)
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
 
     def close(self):
-        """THis shall close session"""
+        """This shall close the session"""
         self.__session.remove()
