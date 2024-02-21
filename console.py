@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+""" This code shall represent the console code"""
 import cmd
 from shlex import split
 from models import storage
@@ -15,16 +16,17 @@ from datetime import datetime
 class HBNBCommand(cmd.Cmd):
     """This is the HBNBCommand class"""
     prompt = "(hbnb) "
-    clsses = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
+    clsses = ["BaseModel", "User", "State", "City",
+              "Amenity", "Place", "Review"]
 
     def do_EOF(self, arg):
         """This shall exit the program"""
         return True
-    
+
     def do_quit(self, arg):
         """This shall exit the program"""
         return True
-    
+
     def emptyline(self):
         """This shall do nothing"""
         pass
@@ -193,6 +195,7 @@ class HBNBCommand(cmd.Cmd):
             print(e)
         except Exception as e:
             print(e)
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
