@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""This fabric script shall dist archive to web_servers"""
+"""This fabric script shall dist archive made at first task to web_servers"""
 from fabric.api import local, env, put, run
 import os
 from os.path import exists
@@ -7,7 +7,7 @@ env.hosts = ['54.174.72.190', '100.26.218.108']
 
 
 def do_deploy(archive_path):
-    """This shall dist archives to server"""
+    """This instance shall dist, unpack then deploy archives to web_servers"""
     if exists(archive_path) is False:
         return False
     try:
