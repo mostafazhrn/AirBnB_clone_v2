@@ -1,0 +1,16 @@
+#!/usr/bin/python3
+""" This script shall start a flask web application listening on p 5000"""
+from flask import Flask
+
+
+app = Flask(__name__)
+
+
+@app.route('/', strict_slashes=False)
+def hello_hbnb():
+    """THis shall display hello HBNB"""
+    return 'Hello HBNB!'
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
