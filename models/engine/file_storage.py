@@ -30,7 +30,7 @@ class FileStorage:
             if cle in self.__objects:
                 del self.__objects[cle]
             self.save()
-        
+
     def new(self, obj):
         """Adds new object to storage dictionary"""
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
@@ -67,3 +67,7 @@ class FileStorage:
                     self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
+
+    def close(self):
+        """ This shall call mthd to deserialize the JSON file to objects """
+        self.reload()
