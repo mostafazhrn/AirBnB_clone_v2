@@ -15,7 +15,7 @@ from datetime import datetime
 
 class HBNBCommand(cmd.Cmd):
     """This class shall represent the start of the command interpreter"""
-    prmpt = "(hbnb) "
+    prompt = "(hbnb) "
     classes = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
 
 
