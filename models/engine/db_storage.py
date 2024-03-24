@@ -2,7 +2,7 @@
 """This shall represent DBStorage module"""
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from models.base_model import Base
+from models.base_model import Base, BaseModel
 from models.user import User
 from models.state import State
 from models.city import City
@@ -31,14 +31,24 @@ class DBStorage:
         self.__engine = create_engine(database, pool_pre_ping=True)
         if getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
-            
+
     def all(self, cls=None):
         """This shall query objs on current database session"""
-        if cls is None:
-            return self.__session.query(User).all(), self.__session.query(State).all(), self.__session.query(City).all(), self.__session.query(Place).all(), self.__session.query(Amenity).all(), self.__session.query(Review).all()
-        else:
-            return self.__session.query(cls).all()
-        
+        ent = dict()
+        if cls:
+            return self.get_data(cls, ent)
+        for ent in classes:
+            self.get_data(eval(ent), ent)
+        return ent
+
+    def get_data(self, cls, st):
+        """ THis shall return all objects of a class """
+        cherch = self.__session.query(cls)
+        for ele in cherch.all():
+            cle = "{}.{}".format(cls.__name__, ele.id)
+            st[cle] = ele
+        return st
+
     def new(self, obj):
         """This shall add the object to the current database session"""
         self.__session.add(obj)
