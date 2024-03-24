@@ -1,29 +1,30 @@
 #!/usr/bin/python3
-""" State Module for HBNB project """
+""" THis shall represent the State class for airbnb_clone_v2 """
+import models
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
 from models.city import City
-import os
+from os import getenv
+from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Integer
 
 
 class State(BaseModel, Base):
-    """ State class """
+    """ This shall represent the State class """
     __tablename__ = "states"
-    name = Column(String(128), nullable=False)
 
-    if os.getenv('HBNB_TYPE_STORAGE') == 'db':
-        cities = relationship("City", cascade="all, delete", backref="state")
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        name = Column(String(128), nullable=False)
+        cities = relationship("City", backref="state", cascade="all, delete-orphan")
     else:
+        name = ''
+
         @property
         def cities(self):
-            """This shall return the list of City instances with state_id"""
-            new_list = []
-            for key, value in models.storage.all(City).items():
-                if value.state_id == self.id:
-                    new_list.append(value)
-            return new_list
-
-    def __init__(self, *args, **kwargs):
-        """This shall initialize the state"""
-        super().__init__(*args, **kwargs)
+            """ this shall return list of cities instances"""
+            cities = list()
+            for _id, city in models.storage.all(City).items():
+                if city.state_id == self.id:
+                    cities.append(city)
+            return cities
