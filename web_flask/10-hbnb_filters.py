@@ -14,13 +14,13 @@ def hbnb_filters():
     """ This shall display the html page"""
     stts = storage.all(State).values()
     cities = list()
-    amenit = storage.all(Amenity).values()
+    amenits = storage.all(Amenity).values()
 
     for stt in stts:
         for city in stt.cities:
             cities.append(city)
     return render_template('10-hbnb_filters.html', stts=stts,
-                           cities=cities, amenit=amenit)
+                           cities=cities, amenits=amenits)
 
 
 @app.teardown_appcontext
